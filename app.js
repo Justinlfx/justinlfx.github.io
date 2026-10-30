@@ -2,8 +2,8 @@ import config from './config.js';
 import {DURATIONS, dateKey, addDays, dayBounds, timeLabel, dayLabel, durationLabel, mergeRanges, gmtOffsetLabel, getSlots, createBooking} from './booking-utils.js';
 
 const copy = {
-  en:{brand:'Justin',bookNav:'Book a time',viewNav:'View availability',switch:'中文',switchLabel:'Switch to Chinese',
-    bookingTitle:'Book a meeting',viewTitle:'Availability',
+  en:{brand:'Justin',bookNav:'Book a time with Justin',viewNav:"Find Justin's Availability",switch:'中文',switchLabel:'Switch to Chinese',
+    bookingTitle:'Book a time with Justin',viewTitle:"Find Justin's Availability",
     bookingDescription:'Book a meeting with Justin. Choose a duration, date, time and meeting location.',viewDescription:'View Justin’s available times by date and time zone.',
     privateNote:'Calendar event details are not displayed.',duration:'Duration',zone:'Time zone',calendar:'Select a date',
     prev:'Previous month',next:'Next month',today:'Today',choose:'Choose a start time',free:'Free time',shown:'All times are in',loading:'Checking availability…',
@@ -17,10 +17,10 @@ const copy = {
     unknown:'We couldn’t verify the result. Please check your email before booking again; your request may have succeeded.',
     booked:'Booking confirmed',pending:'Awaiting confirmation',confirmedNote:'Calendar invitation will be sent to',pendingNote:'Confirmation will be emailed to',
     anotherBooking:'Back to calendar',successLabel:'Booking confirmation',location:'Meeting location',zoom:'Zoom',custom:'Custom location',customLabel:'Location or meeting link',locationRequired:'Please enter your custom location or meeting link.',zoomHint:'A Zoom meeting link will be included in your calendar invitation.',openZoom:'Open Zoom meeting',endNext:'next day',
-    viewPageTitle:'Justin’s availability',bookPageTitle:'Book a meeting with Justin',
+    viewPageTitle:"Find Justin's Availability",bookPageTitle:'Book a time with Justin',
   },
-  zh:{brand:'Justin',bookNav:'预约时间',viewNav:'查看空闲时间',switch:'English',switchLabel:'切换为英文',
-    bookingTitle:'预约会议',viewTitle:'空闲时间',
+  zh:{brand:'Justin',bookNav:'预约 Justin 的时间',viewNav:'查看 Justin 的空闲时间',switch:'English',switchLabel:'切换为英文',
+    bookingTitle:'预约 Justin 的时间',viewTitle:'查看 Justin 的空闲时间',
     bookingDescription:'预约与 Justin 的会议，选择时长、日期、时间和会议地点。',viewDescription:'按日期和时区查看 Justin 的空闲时间。',
     privateNote:'不展示日历中的事件详情。',duration:'预约时长',zone:'时区',calendar:'选择日期',
     prev:'上个月',next:'下个月',today:'今天',choose:'选择开始时间',free:'空闲时段',shown:'以下时间均为',loading:'正在查询空闲时间…',
@@ -34,7 +34,7 @@ const copy = {
     unknown:'暂时无法确认预约结果。请先检查邮箱，再决定是否重新预约；刚才的预约可能已成功。',
     booked:'预约成功',pending:'等待确认',confirmedNote:'日历邀请将发送至',pendingNote:'确认结果将发送至',
     anotherBooking:'返回日历',successLabel:'预约确认',location:'会议地点',zoom:'Zoom',custom:'自定义地点',customLabel:'地点或会议链接',locationRequired:'请填写自定义地点或会议链接。',zoomHint:'日历邀请中将包含 Zoom 会议链接。',openZoom:'打开 Zoom 会议',endNext:'次日',
-    viewPageTitle:'Justin 的空闲时间',bookPageTitle:'预约与 Justin 的会议',
+    viewPageTitle:'查看 Justin 的空闲时间',bookPageTitle:'预约 Justin 的时间',
   }
 };
 const zones = [

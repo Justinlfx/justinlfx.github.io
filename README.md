@@ -25,8 +25,8 @@ Open `http://127.0.0.1:4173`.
 
 Manage the following in the private Cal.com dashboard:
 
-- Check the U.S Personal, U.S Work, USC primary, and Outlook primary calendars for conflicts. Explicitly exclude **HOX Calendar NEW**, birthdays, and holidays.
-- Keep all five connected iCloud calendars enabled through the free Apple Calendar integration: 课表, 飞行计划, Calendar, NookX, and USC. The connection uses a private Apple app-specific password named **Cal.com Availability**. No password is stored in this repository.
+- Check the primary calendars from the three connected Google accounts and one Outlook account. Keep the selected shared calendar, birthdays, and holidays excluded.
+- Keep all five connected iCloud calendars enabled through the free Apple Calendar integration. The connection uses a private Apple app-specific password; no password is stored in this repository.
 - Keep **滴答清单 · 预约冲突（自动同步）** enabled. The private Apps Script mirror successfully synchronized 11 unfinished task time blocks and installed one trigger to run approximately every 15 minutes. The failed direct ICS connection and unused Google URL subscription have been removed.
 - Use U.S Work as both the Cal.com primary email and the destination calendar for new bookings.
 - Set every day to 08:00–22:00 in `America/Los_Angeles`.

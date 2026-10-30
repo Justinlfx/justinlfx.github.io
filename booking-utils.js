@@ -62,15 +62,24 @@ export async function getSlots({ eventTypeId, day, zone, duration, signal }) {
   if (result.status !== 'success') throw new Error('Availability unavailable');
   return normalizeSlots(result.data, bounds, duration);
 }
-export async function createBooking({ eventTypeId, slot, duration, zone, lang, fields }) {
+export function bookingLocation(choice, customLocation) {
+  if (choice === 'zoom') return {type:'integration', integration:'zoom'};
+  if (choice === 'custom' && typeof customLocation === 'string' && customLocation.trim() && customLocation.trim().length <= 500) return {type:'attendeeDefined', location:customLocation.trim()};
+  throw new Error('A valid meeting location is required');
+}
+export async function createBooking({ eventTypeId, slot, duration, zone, lang, fields, location }) {
   if (!DURATIONS.includes(duration) || slot.end-slot.start !== duration*60000) throw new Error('Invalid booking duration');
+  const meetingLocation = bookingLocation(location, fields.customLocation);
+  const responses = {};
+  if (fields.topic?.trim()) responses.title = fields.topic.trim();
+  if (fields.notes?.trim()) responses.notes = fields.notes.trim();
   // A submission is never retried automatically: a lost response may still mean the booking was created.
   const response = await fetch('https://api.cal.com/v2/bookings', {
     method:'POST', credentials:'omit', signal:AbortSignal.timeout(45000),
     headers:{'Content-Type':'application/json','cal-api-version':'2026-02-25'},
     body:JSON.stringify({eventTypeId, start:new Date(slot.start).toISOString(), lengthInMinutes:duration,
       attendee:{name:fields.name, email:fields.email, timeZone:zone, language:lang === 'zh' ? 'zh-CN' : 'en'},
-      bookingFieldsResponses:{title:fields.topic, organization:fields.organization, notes:fields.notes}})
+      location:meetingLocation, bookingFieldsResponses:responses})
   });
   const result = await response.json();
   if (!response.ok) { const error = new Error('Booking rejected'); error.definite = response.status >= 400 && response.status < 500; throw error; }

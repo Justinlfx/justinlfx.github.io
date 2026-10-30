@@ -11,12 +11,12 @@ const copy = {
     days:['S','M','T','W','T','F','S'],dayNames:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     ranges:n=>`${n} ${n===1?'free window':'free windows'}`,total:t=>`${t} available`,minuteNote:'Live free-time windows, shown to the minute. Today shows the time still ahead.',
     chooseHint:'Start times follow your selected meeting length.',back:'Back to times',details:'Your details',detailsIntro:'A calendar invitation will be sent to your email.',
-    name:'Full name',email:'Email address',topic:'What would you like to discuss?',organization:'Company or school',notes:'Anything else?',optional:'Optional',
-    confirm:'Confirm booking',sending:'Confirming your time…',required:'Please complete your name, email, and meeting topic.',invalidEmail:'Please enter a valid email address.',
+    name:'Full name',email:'Email address',topic:'What would you like to discuss?',notes:'Anything else?',optional:'Optional',
+    confirm:'Confirm booking',sending:'Confirming your time…',required:'Please complete your name and email.',invalidEmail:'Please enter a valid email address.',
     stale:'This time is no longer available. Please choose another.',rejected:'The booking could not be completed. Refresh the times and try again.',
     unknown:'We couldn’t verify the result. Please check your email before booking again; your request may have succeeded.',
     booked:'You’re on the calendar.',pending:'Your request has been sent.',confirmedNote:'Your calendar invitation is on its way to',pendingNote:'You’ll receive an email when your request is confirmed at',
-    anotherBooking:'Back to calendar',successLabel:'Booking confirmation',video:'Video meeting',endNext:'next day',footer:'A little time. A good conversation.',
+    anotherBooking:'Back to calendar',successLabel:'Booking confirmation',location:'Meeting location',zoom:'Zoom',custom:'Custom location',customLabel:'Location or meeting link',customHint:'Enter an address, a meeting link, or another place to meet.',locationRequired:'Please enter your custom location or meeting link.',zoomHint:'A Zoom meeting link will be included in your calendar invitation.',openZoom:'Open Zoom meeting',endNext:'next day',footer:'A little time. A good conversation.',
     viewPageTitle:'Justin’s availability',bookPageTitle:'Book time with Justin',footerTime:'Times update as calendars change.',selected:'Selected',
   },
   zh:{brand:'Justin 的空闲时间',bookNav:'预约时间',viewNav:'查看空闲时间',switch:'English',switchLabel:'切换为英文',
@@ -28,12 +28,12 @@ const copy = {
     days:['日','一','二','三','四','五','六'],dayNames:['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
     ranges:n=>`${n} 个空闲时段`,total:t=>`共 ${t} 空闲`,minuteNote:'空闲区间精确到分钟。查看今天时，仅显示尚未过去的时间。',
     chooseHint:'开始时间按所选预约时长排列。',back:'返回选择时间',details:'填写预约信息',detailsIntro:'日历邀请将发送到你填写的邮箱。',
-    name:'姓名',email:'邮箱地址',topic:'想聊些什么？',organization:'公司或学校',notes:'其他补充',optional:'选填',
-    confirm:'确认预约',sending:'正在确认预约…',required:'请填写姓名、邮箱和交流主题。',invalidEmail:'请填写有效的邮箱地址。',
+    name:'姓名',email:'邮箱地址',topic:'想聊些什么？',notes:'其他补充',optional:'选填',
+    confirm:'确认预约',sending:'正在确认预约…',required:'请填写姓名和邮箱。',invalidEmail:'请填写有效的邮箱地址。',
     stale:'这个时段已不可预约，请重新选择。',rejected:'预约未能完成，请刷新时段后重试。',
     unknown:'暂时无法确认预约结果。请先检查邮箱，再决定是否重新预约；刚才的预约可能已成功。',
     booked:'预约成功，到时见。',pending:'预约请求已发送。',confirmedNote:'日历邀请将发送至',pendingNote:'预约确认后，我们会通过以下邮箱通知你：',
-    anotherBooking:'返回日历',successLabel:'预约确认',video:'视频会议',endNext:'次日',footer:'留点时间，好好聊聊。',
+    anotherBooking:'返回日历',successLabel:'预约确认',location:'会议地点',zoom:'Zoom',custom:'自定义地点',customLabel:'地点或会议链接',customHint:'填写地址、会议链接，或其他见面地点。',locationRequired:'请填写自定义地点或会议链接。',zoomHint:'日历邀请中将包含 Zoom 会议链接。',openZoom:'打开 Zoom 会议',endNext:'次日',footer:'留点时间，好好聊聊。',
     viewPageTitle:'Justin 的空闲时间',bookPageTitle:'预约与 Justin 的交流',footerTime:'空闲时间随日历变化而更新。',selected:'已选择',
   }
 };
@@ -50,7 +50,7 @@ let initialZone = stored('justin-time-zone') || Intl.DateTimeFormat().resolvedOp
 try{new Intl.DateTimeFormat('en',{timeZone:initialZone});}catch{initialZone=config.hostTimeZone;}
 const state = {lang:['en','zh'].includes(params.get('lang')) ? params.get('lang') : stored('justin-language') === 'zh' ? 'zh' : config.defaultLanguage,
  zone:initialZone,day:dateKey(Date.now(),initialZone),month:'',duration:30,slots:[],loading:true,error:'',slot:null,submitting:false,result:null,uncertain:false,
- fields:{name:'',email:'',topic:'',organization:'',notes:''},formError:''};
+ fields:{name:'',email:'',topic:'',notes:'',customLocation:''},location:'zoom',formError:''};
 if (initialZone === config.hostTimeZone && Number(new Intl.DateTimeFormat('en',{timeZone:initialZone,hour:'numeric',hourCycle:'h23'}).format(new Date())) >= 22) state.day=addDays(state.day,1);
 state.month=state.day.slice(0,7);
 const app=document.querySelector('#app'), cache=new Map();
@@ -100,13 +100,27 @@ function slotsHTML() {
  return `<section class="times-panel" aria-labelledby="times-title" aria-busy="${state.loading}"><div class="times-heading"><p class="section-label">${readOnly?t().free:t().choose}</p><button class="icon-button refresh" data-refresh aria-label="${t().refresh}" ${state.loading?'disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M19 11a7 7 0 0 0-12-5L4 9m16 6-3 3A7 7 0 0 1 5 13"/></svg></button></div><h2 id="times-title">${dayLabel(state.day,state.lang)}</h2><p class="zone-caption">${t().shown} ${esc(zoneLabel())}</p><div id="slots" aria-live="polite">${content}</div></section>`;
 }
 function fieldHTML(name,label,required=false,type='text') {
- return `<label class="field">${label}${required?' <span aria-hidden="true">*</span>':` <small>${t().optional}</small>`}<input name="${name}" type="${type}" value="${esc(state.fields[name])}" ${required?'required':''} autocomplete="${name==='name'?'name':name==='email'?'email':name==='organization'?'organization':'off'}" maxlength="${name==='topic'?200:254}" ${state.submitting?'disabled':''}></label>`;
+ return `<label class="field">${label}${required?' <span aria-hidden="true">*</span>':` <small>${t().optional}</small>`}<input name="${name}" type="${type}" value="${esc(state.fields[name])}" ${required?'required':''} autocomplete="${name==='name'?'name':name==='email'?'email':'off'}" maxlength="${name==='topic'?200:name==='customLocation'?500:254}" ${state.submitting?'disabled':''}></label>`;
+}
+function locationSummary() {
+ return state.location==='zoom' ? t().zoom : state.fields.customLocation.trim() || t().custom;
+}
+function locationHTML() {
+ return `<fieldset class="location-field"><legend>${t().location}</legend><div class="location-options"><label class="location-option ${state.location==='zoom'?'chosen':''}"><input type="radio" name="meetingLocation" value="zoom" ${state.location==='zoom'?'checked':''} ${state.submitting?'disabled':''}>${t().zoom}</label><label class="location-option ${state.location==='custom'?'chosen':''}"><input type="radio" name="meetingLocation" value="custom" ${state.location==='custom'?'checked':''} ${state.submitting?'disabled':''}>${t().custom}</label></div>${state.location==='custom'?`${fieldHTML('customLocation',t().customLabel,true)}<p class="location-hint">${t().customHint}</p>`:`<p class="location-hint">${t().zoomHint}</p>`}</fieldset>`;
+}
+function zoomLinkHTML() {
+ if(state.location!=='zoom'||state.result?.status!=='accepted')return '';
+ try{
+  const url=new URL(state.result.meetingUrl || state.result.location);
+  if(url.protocol!=='https:'||!/(^|\.)zoom\.(us|com)$/.test(url.hostname))return '';
+  return `<a class="meeting-link" href="${esc(url.href)}" target="_blank" rel="noopener noreferrer">${t().openZoom} ↗</a>`;
+ }catch{return '';}
 }
 function detailsHTML() {
- return `<section class="details-panel"><button class="text-button" data-back ${state.submitting?'disabled':''}>← ${t().back}</button><h2 tabindex="-1" id="details-title">${t().details}</h2><p class="muted">${t().detailsIntro}</p><div class="appointment"><span class="appointment-day">${dayLabel(state.day,state.lang,{year:'numeric'})}</span><strong>${esc(rangeLabel(state.slot))}</strong><span>${dur(state.duration)} · ${esc(zoneLabel())} · ${t().video}</span></div><form id="booking-form" novalidate><div class="form-row">${fieldHTML('name',t().name,true)}${fieldHTML('email',t().email,true,'email')}</div>${fieldHTML('topic',t().topic,true)}${fieldHTML('organization',t().organization)}<label class="field">${t().notes} <small>${t().optional}</small><textarea name="notes" rows="3" maxlength="2000" ${state.submitting?'disabled':''}>${esc(state.fields.notes)}</textarea></label><p class="form-error" role="alert">${state.formError?t()[state.formError]:''}</p><button type="submit" class="primary" ${state.submitting||state.uncertain?'disabled':''}>${state.submitting?'<span class="spinner"></span> '+t().sending:t().confirm}</button></form></section>`;
+ return `<section class="details-panel"><button class="text-button" data-back ${state.submitting?'disabled':''}>← ${t().back}</button><h2 tabindex="-1" id="details-title">${t().details}</h2><p class="muted">${t().detailsIntro}</p><div class="appointment"><span class="appointment-day">${dayLabel(state.day,state.lang,{year:'numeric'})}</span><strong>${esc(rangeLabel(state.slot))}</strong><span>${dur(state.duration)} · ${esc(zoneLabel())} · ${esc(locationSummary())}</span></div><form id="booking-form" novalidate><div class="form-row">${fieldHTML('name',t().name,true)}${fieldHTML('email',t().email,true,'email')}</div>${locationHTML()}${fieldHTML('topic',t().topic)}<label class="field">${t().notes} <small>${t().optional}</small><textarea name="notes" rows="3" maxlength="2000" ${state.submitting?'disabled':''}>${esc(state.fields.notes)}</textarea></label><p class="form-error" role="alert">${state.formError?t()[state.formError]:''}</p><button type="submit" class="primary" ${state.submitting||state.uncertain?'disabled':''}>${state.submitting?'<span class="spinner"></span> '+t().sending:t().confirm}</button></form></section>`;
 }
 function successHTML() {
- return `<section class="success-panel" aria-label="${t().successLabel}"><div class="success-check">✓</div><h2 tabindex="-1" id="success-title">${state.result.status==='accepted'?t().booked:t().pending}</h2><p>${state.result.status==='accepted'?t().confirmedNote:t().pendingNote}<br><strong>${esc(state.fields.email)}</strong></p><div class="appointment"><span>${dayLabel(state.day,state.lang,{year:'numeric'})}</span><strong>${esc(rangeLabel(state.slot))}</strong><span>${dur(state.duration)} · ${esc(zoneLabel())}</span></div><button class="outline" data-reset>${t().anotherBooking}</button></section>`;
+ return `<section class="success-panel" aria-label="${t().successLabel}"><div class="success-check">✓</div><h2 tabindex="-1" id="success-title">${state.result.status==='accepted'?t().booked:t().pending}</h2><p>${state.result.status==='accepted'?t().confirmedNote:t().pendingNote}<br><strong>${esc(state.fields.email)}</strong></p><div class="appointment"><span>${dayLabel(state.day,state.lang,{year:'numeric'})}</span><strong>${esc(rangeLabel(state.slot))}</strong><span>${dur(state.duration)} · ${esc(zoneLabel())}</span><span class="meeting-summary">${esc(locationSummary())}</span>${zoomLinkHTML()}</div><button class="outline" data-reset>${t().anotherBooking}</button></section>`;
 }
 function render() {
  const c=t();document.documentElement.lang=state.lang==='zh'?'zh-CN':'en';document.title=readOnly?c.viewPageTitle:c.bookPageTitle;
@@ -124,9 +138,10 @@ function bind() {
  document.querySelectorAll('[data-refresh]').forEach(b=>b.onclick=()=>loadSlots(true));
  document.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{state.slot=state.slots.find(s=>s.start===Number(b.dataset.start));state.formError='';state.uncertain=false;render();document.querySelector('#details-title')?.focus();});
  document.querySelector('[data-back]')?.addEventListener('click',()=>{state.slot=null;state.formError='';loadSlots(true);});
- document.querySelector('[data-reset]')?.addEventListener('click',()=>{state.result=null;state.slot=null;state.fields={name:'',email:'',topic:'',organization:'',notes:''};cache.clear();loadSlots(true);});
+ document.querySelector('[data-reset]')?.addEventListener('click',()=>{state.result=null;state.slot=null;state.fields={name:'',email:'',topic:'',notes:'',customLocation:''};state.location='zoom';cache.clear();loadSlots(true);});
  const form=document.querySelector('#booking-form');
  form?.addEventListener('input',e=>{if(Object.hasOwn(state.fields,e.target.name))state.fields[e.target.name]=e.target.value;});
+ form?.addEventListener('change',e=>{if(e.target.name==='meetingLocation'){state.location=e.target.value;state.formError='';render();if(state.location==='custom')document.querySelector('[name="customLocation"]')?.focus();}});
  form?.addEventListener('submit',submitBooking);
 }
 async function loadSlots(force=false) {
@@ -144,15 +159,16 @@ async function loadSlots(force=false) {
 async function submitBooking(event) {
  event.preventDefault();if(state.submitting||state.uncertain)return;
  for(const key of Object.keys(state.fields))state.fields[key]=state.fields[key].trim();
- if(!state.fields.name||!state.fields.email||!state.fields.topic){state.formError='required';render();return;}
+ if(!state.fields.name||!state.fields.email){state.formError='required';render();return;}
  if(!document.querySelector('[name="email"]').validity.valid){state.formError='invalidEmail';render();return;}
+ if(state.location==='custom'&&!state.fields.customLocation){state.formError='locationRequired';render();document.querySelector('[name="customLocation"]')?.focus();return;}
  state.submitting=true;state.formError='';render();
  let checked=false;
  try{
   const latest=await getSlots({eventTypeId:config.eventTypeId,day:state.day,zone:state.zone,duration:state.duration,signal:AbortSignal.timeout(20000)});
   if(!latest.some(s=>s.start===state.slot.start)){state.formError='stale';return;}
   checked=true;
-  state.result=await createBooking({eventTypeId:config.eventTypeId,slot:state.slot,duration:state.duration,zone:state.zone,lang:state.lang,fields:state.fields});
+  state.result=await createBooking({eventTypeId:config.eventTypeId,slot:state.slot,duration:state.duration,zone:state.zone,lang:state.lang,fields:state.fields,location:state.location});
   cache.clear();
  }catch(error){state.formError=!checked?'failed':error.definite?'rejected':'unknown';state.uncertain=checked&&!error.definite;}
  finally{state.submitting=false;render();document.querySelector(state.result?'#success-title':'.form-error')?.focus();}

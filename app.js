@@ -1,5 +1,5 @@
 import config from './config.js';
-import {DURATIONS, dateKey, addDays, dayBounds, timeLabel, dayLabel, durationLabel, mergeRanges, getSlots, createBooking} from './booking-utils.js';
+import {DURATIONS, dateKey, addDays, dayBounds, timeLabel, dayLabel, durationLabel, mergeRanges, gmtOffsetLabel, getSlots, createBooking} from './booking-utils.js';
 
 const copy = {
   en:{brand:'Justin availability',bookNav:'Book a time',viewNav:'View availability',switch:'中文',switchLabel:'Switch to Chinese',
@@ -38,8 +38,9 @@ const copy = {
   }
 };
 const zones = [
- ['America/Los_Angeles','Los Angeles','洛杉矶'],['America/Vancouver','Vancouver','温哥华'],['America/Denver','Denver','丹佛'],['America/Phoenix','Phoenix','凤凰城'],['America/Chicago','Chicago','芝加哥'],['America/New_York','New York','纽约'],['America/Toronto','Toronto','多伦多'],['America/Anchorage','Anchorage','安克雷奇'],['Pacific/Honolulu','Honolulu','檀香山'],['America/Mexico_City','Mexico City','墨西哥城'],['America/Sao_Paulo','São Paulo','圣保罗'],
- ['Europe/London','London','伦敦'],['Europe/Paris','Paris','巴黎'],['Europe/Berlin','Berlin','柏林'],['Europe/Helsinki','Helsinki','赫尔辛基'],['Europe/Moscow','Moscow','莫斯科'],['Africa/Johannesburg','Johannesburg','约翰内斯堡'],['Asia/Dubai','Dubai','迪拜'],['Asia/Kolkata','India','印度'],['Asia/Bangkok','Bangkok','曼谷'],['Asia/Shanghai','Beijing / Shanghai','北京／上海'],['Asia/Hong_Kong','Hong Kong','香港'],['Asia/Taipei','Taipei','台北'],['Asia/Singapore','Singapore','新加坡'],['Asia/Tokyo','Tokyo','东京'],['Asia/Seoul','Seoul','首尔'],['Australia/Perth','Perth','珀斯'],['Australia/Brisbane','Brisbane','布里斯班'],['Australia/Sydney','Sydney','悉尼'],['Australia/Adelaide','Adelaide','阿德莱德'],['Pacific/Auckland','Auckland','奥克兰'],['UTC','Coordinated Universal Time','协调世界时']
+ ['America/Los_Angeles','US Pacific Time','美西时间'],['America/New_York','US Eastern Time','美东时间'],['Asia/Shanghai','Beijing Time','北京时间'],['America/Chicago','US Central Time','中部时间'],['America/Denver','US Mountain Time','山地时间'],
+ ['America/Vancouver','Vancouver','温哥华'],['America/Phoenix','Phoenix','凤凰城'],['America/Toronto','Toronto','多伦多'],['America/Anchorage','Anchorage','安克雷奇'],['Pacific/Honolulu','Honolulu','檀香山'],['America/Mexico_City','Mexico City','墨西哥城'],['America/Sao_Paulo','São Paulo','圣保罗'],
+ ['Europe/London','London','伦敦'],['Europe/Paris','Paris','巴黎'],['Europe/Berlin','Berlin','柏林'],['Europe/Helsinki','Helsinki','赫尔辛基'],['Europe/Moscow','Moscow','莫斯科'],['Africa/Johannesburg','Johannesburg','约翰内斯堡'],['Asia/Dubai','Dubai','迪拜'],['Asia/Kolkata','India','印度'],['Asia/Bangkok','Bangkok','曼谷'],['Asia/Hong_Kong','Hong Kong','香港'],['Asia/Taipei','Taipei','台北'],['Asia/Singapore','Singapore','新加坡'],['Asia/Tokyo','Tokyo','东京'],['Asia/Seoul','Seoul','首尔'],['Australia/Perth','Perth','珀斯'],['Australia/Brisbane','Brisbane','布里斯班'],['Australia/Sydney','Sydney','悉尼'],['Australia/Adelaide','Adelaide','阿德莱德'],['Pacific/Auckland','Auckland','奥克兰'],['UTC','UTC','协调世界时']
 ];
 const readOnly = document.body.dataset.page === 'availability';
 const params = new URLSearchParams(location.search);
@@ -58,10 +59,18 @@ const t=()=>copy[state.lang];
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clock=value=>timeLabel(value,state.zone,state.lang);
 const dur=value=>durationLabel(value,state.lang);
+const offsetCache = new Map();
 function zoneLabel(zone=state.zone) {
  const known=zones.find(z=>z[0]===zone);
- if(known)return known[state.lang==='zh'?2:1];
- return new Intl.DateTimeFormat(state.lang==='zh'?'zh-CN':'en-US',{timeZone:zone,timeZoneName:'longGeneric'}).formatToParts(new Date()).find(p=>p.type==='timeZoneName')?.value || zone;
+ const name=known ? known[state.lang==='zh'?2:1] : new Intl.DateTimeFormat(state.lang==='zh'?'zh-CN':'en-US',{timeZone:zone,timeZoneName:'longGeneric'}).formatToParts(new Date()).find(p=>p.type==='timeZoneName')?.value || zone;
+ const key=`${zone}|${state.day}`;
+ if(!offsetCache.has(key)) {
+  const bounds=dayBounds(state.day,zone);
+  // Use the selected local day's midpoint, so future dates show their own seasonal offset.
+  offsetCache.set(key,gmtOffsetLabel((bounds.start+bounds.end)/2,zone));
+ }
+ const offset=state.slot && zone===state.zone ? gmtOffsetLabel(state.slot.start,zone) : offsetCache.get(key);
+ return `${name} (${offset})`;
 }
 function rangeLabel(slot) {
  const next=dateKey(slot.end,state.zone)!==dateKey(slot.start,state.zone)?` (${t().endNext})`:'';
@@ -102,8 +111,8 @@ function successHTML() {
 function render() {
  const c=t();document.documentElement.lang=state.lang==='zh'?'zh-CN':'en';document.title=readOnly?c.viewPageTitle:c.bookPageTitle;
  document.querySelector('meta[name="description"]').content=readOnly?c.viewIntro:c.bookingIntro;
- const options=[...zones]; if(!zones.some(z=>z[0]===state.zone))options.unshift([state.zone,zoneLabel(),zoneLabel()]);
- app.innerHTML=`<a class="skip-link" href="#main">${state.lang==='zh'?'跳转到主要内容':'Skip to main content'}</a><div class="page-shell"><header><a class="wordmark" href="./?lang=${state.lang}"><span class="brand-mark" aria-hidden="true">j.</span>${c.brand}</a><div class="header-actions"><nav aria-label="${state.lang==='zh'?'页面导航':'Main navigation'}"><a class="${readOnly?'':'active'}" ${readOnly?'':'aria-current="page"'} href="./?lang=${state.lang}">${c.bookNav}</a><a class="${readOnly?'active':''}" ${readOnly?'aria-current="page"':''} href="./availability.html?lang=${state.lang}">${c.viewNav}</a></nav><button class="language-button" id="language" aria-label="${c.switchLabel}" ${state.submitting?'disabled':''}>${c.switch}</button></div></header><main id="main" class="main-card ${readOnly?'view-mode':''}"><aside class="intro"><div class="intro-top"><div class="avatar" aria-hidden="true">JL<span></span></div><p class="eyebrow">${readOnly?c.viewEyebrow:c.eyebrow}</p><h1>${(readOnly?c.viewTitle:c.bookingTitle).replace('\n','<br>')}</h1><p class="intro-copy">${readOnly?c.viewIntro:c.bookingIntro}</p></div><div class="intro-bottom"><div class="orbital" aria-hidden="true"><span></span><i></i></div><p>${lock}${c.privateNote}</p></div></aside><div class="workspace">${state.result?successHTML():state.slot?detailsHTML():`<div class="preferences">${readOnly?'':`<div class="duration-control"><p class="section-label">${c.duration}</p><div class="duration-buttons" role="group" aria-label="${c.duration}">${DURATIONS.map(d=>`<button data-duration="${d}" class="${d===state.duration?'selected':''}" aria-pressed="${d===state.duration}">${dur(d)}</button>`).join('')}</div></div>`}<label class="timezone-control"><span class="section-label">${c.zone}</span><select id="timezone">${options.map(z=>`<option value="${z[0]}" ${z[0]===state.zone?'selected':''}>${esc(z[state.lang==='zh'?2:1])}</option>`).join('')}</select></label></div><div class="schedule-grid">${calendarHTML()}${slotsHTML()}</div>`}</div></main><footer><span>${c.footer}</span><span>${c.footerTime}</span></footer></div>`;
+ const options=[...zones]; if(!zones.some(z=>z[0]===state.zone))options.push([state.zone]);
+ app.innerHTML=`<a class="skip-link" href="#main">${state.lang==='zh'?'跳转到主要内容':'Skip to main content'}</a><div class="page-shell"><header><a class="wordmark" href="./?lang=${state.lang}"><span class="brand-mark" aria-hidden="true">j.</span>${c.brand}</a><div class="header-actions"><nav aria-label="${state.lang==='zh'?'页面导航':'Main navigation'}"><a class="${readOnly?'':'active'}" ${readOnly?'':'aria-current="page"'} href="./?lang=${state.lang}">${c.bookNav}</a><a class="${readOnly?'active':''}" ${readOnly?'aria-current="page"':''} href="./availability.html?lang=${state.lang}">${c.viewNav}</a></nav><button class="language-button" id="language" aria-label="${c.switchLabel}" ${state.submitting?'disabled':''}>${c.switch}</button></div></header><main id="main" class="main-card ${readOnly?'view-mode':''}"><aside class="intro"><div class="intro-top"><div class="avatar" aria-hidden="true">JL<span></span></div><p class="eyebrow">${readOnly?c.viewEyebrow:c.eyebrow}</p><h1>${(readOnly?c.viewTitle:c.bookingTitle).replace('\n','<br>')}</h1><p class="intro-copy">${readOnly?c.viewIntro:c.bookingIntro}</p></div><div class="intro-bottom"><div class="orbital" aria-hidden="true"><span></span><i></i></div><p>${lock}${c.privateNote}</p></div></aside><div class="workspace">${state.result?successHTML():state.slot?detailsHTML():`<div class="preferences">${readOnly?'':`<div class="duration-control"><p class="section-label">${c.duration}</p><div class="duration-buttons" role="group" aria-label="${c.duration}">${DURATIONS.map(d=>`<button data-duration="${d}" class="${d===state.duration?'selected':''}" aria-pressed="${d===state.duration}">${dur(d)}</button>`).join('')}</div></div>`}<label class="timezone-control"><span class="section-label">${c.zone}</span><select id="timezone">${options.map(z=>`<option value="${z[0]}" ${z[0]===state.zone?'selected':''}>${esc(zoneLabel(z[0]))}</option>`).join('')}</select></label></div><div class="schedule-grid">${calendarHTML()}${slotsHTML()}</div>`}</div></main><footer><span>${c.footer}</span><span>${c.footerTime}</span></footer></div>`;
  bind();
 }
 function bind() {

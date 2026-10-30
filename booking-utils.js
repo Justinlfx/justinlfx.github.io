@@ -17,6 +17,10 @@ export function dayBounds(key, zone) { return { start: startOfDay(key, zone), en
 export function timeLabel(value, zone, lang) {
   return new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en-US', { timeZone:zone, hour:'numeric', minute:'2-digit', hourCycle:'h12' }).format(new Date(value));
 }
+export function gmtOffsetLabel(value, zone) {
+  const offset = new Intl.DateTimeFormat('en-US', {timeZone:zone, timeZoneName:'longOffset'}).formatToParts(new Date(value)).find(p => p.type === 'timeZoneName').value;
+  return offset === 'GMT' ? 'GMT+00:00' : offset;
+}
 export function dayLabel(key, lang, options = {}) {
   return new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en-US', { timeZone:'UTC', month:'long', day:'numeric', weekday:'long', ...options }).format(new Date(key + 'T12:00:00Z'));
 }

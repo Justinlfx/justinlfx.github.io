@@ -8,6 +8,8 @@ A responsive bilingual website hosted free on GitHub Pages.
 
 English and Chinese have independent interface translations. The language switch reads 中文 in English and English in Chinese. All appointment times use a 12-hour clock, with AM/PM in English and 上午/下午 in Chinese. The view-only page shows continuous free intervals for the selected day in the visitor’s selected time zone. It contains no booking form or clickable appointment slots.
 
+Time zones start with U.S. Pacific, U.S. Eastern, Beijing, U.S. Central, and U.S. Mountain, followed by other regions. Labels include the GMT offset for the selected date and automatically follow daylight-saving changes.
+
 ## Development
 
 Node.js 22+, no dependencies:
@@ -41,8 +43,8 @@ Official API references:
 Manage private calendar connections in Cal.com:
 
 - Combine the primary calendars from U.S Work, U.S Personal, USC, and Outlook.
-- Keep **HOX Calendar NEW excluded**, along with birthdays and holidays.
-- Keep the five connected iCloud calendars selected: 课表, 飞行计划, Calendar, NookX, USC.
+- Keep unwanted shared calendars, birthdays, and holidays excluded.
+- Keep the five previously connected iCloud calendars selected.
 - Keep the private Dida busy-time mirror selected. Its private Google Apps Script sync runs approximately every 15 minutes; the subscription feed and credentials stay outside this repository.
 - Daily scheduling hours remain 08:00–22:00 in `America/Los_Angeles`. The removed left-side information block does not change these scheduling rules.
 - New bookings are added to U.S Work; U.S Work is the invitation’s calendar organizer. Cal.com’s delivery service sends the confirmation email, with U.S Work as Reply-To. This is not custom SMTP sending.

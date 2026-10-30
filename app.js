@@ -2,39 +2,39 @@ import config from './config.js';
 import {DURATIONS, dateKey, addDays, dayBounds, timeLabel, dayLabel, durationLabel, mergeRanges, gmtOffsetLabel, getSlots, createBooking} from './booking-utils.js';
 
 const copy = {
-  en:{brand:'Justin availability',bookNav:'Book a time',viewNav:'View availability',switch:'中文',switchLabel:'Switch to Chinese',
-    bookingTitle:'Make time for a good conversation.',viewTitle:'A little room in the day.',eyebrow:'TIME WITH JUSTIN',viewEyebrow:'JUSTIN’S AVAILABILITY',
-    bookingIntro:'Pick a time that works for you. I’ll see you there.',viewIntro:'Choose a day to see when I’m free, wherever you are.',
-    privateNote:'Only free time is shared. Calendar details stay private.',duration:'Meeting length',zone:'Your time zone',calendar:'Choose a day',
+  en:{brand:'Justin',bookNav:'Book a time',viewNav:'View availability',switch:'中文',switchLabel:'Switch to Chinese',
+    bookingTitle:'Book a meeting',viewTitle:'Availability',
+    bookingDescription:'Book a meeting with Justin. Choose a duration, date, time and meeting location.',viewDescription:'View Justin’s available times by date and time zone.',
+    privateNote:'Calendar event details are not displayed.',duration:'Duration',zone:'Time zone',calendar:'Select a date',
     prev:'Previous month',next:'Next month',today:'Today',choose:'Choose a start time',free:'Free time',shown:'All times are in',loading:'Checking availability…',
-    empty:'No free time on this day.',emptyBook:'No times fit this meeting length on this day.',another:'Try another day.',failed:'Availability could not be loaded. Please try again.',retry:'Try again',refresh:'Refresh',
+    empty:'No available times.',emptyBook:'No available times for this duration.',another:'Select another date.',failed:'Availability could not be loaded. Please try again.',retry:'Try again',refresh:'Refresh',
     days:['S','M','T','W','T','F','S'],dayNames:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-    ranges:n=>`${n} ${n===1?'free window':'free windows'}`,total:t=>`${t} available`,minuteNote:'Live free-time windows, shown to the minute. Today shows the time still ahead.',
-    chooseHint:'Start times follow your selected meeting length.',back:'Back to times',details:'Your details',detailsIntro:'A calendar invitation will be sent to your email.',
-    name:'Full name',email:'Email address',topic:'What would you like to discuss?',notes:'Anything else?',optional:'Optional',
-    confirm:'Confirm booking',sending:'Confirming your time…',required:'Please complete your name and email.',invalidEmail:'Please enter a valid email address.',
+    ranges:n=>`${n} available ${n===1?'period':'periods'}`,total:t=>`${t} available`,minuteNote:'Past times are excluded.',
+    chooseHint:'Start times follow your selected meeting length.',back:'Back to times',details:'Booking details',detailsIntro:'A calendar invitation will be sent to your email.',
+    name:'Full name',email:'Email address',topic:'Meeting topic',notes:'Notes',optional:'Optional',
+    confirm:'Confirm booking',sending:'Confirming booking…',required:'Please complete your name and email.',invalidEmail:'Please enter a valid email address.',
     stale:'This time is no longer available. Please choose another.',rejected:'The booking could not be completed. Refresh the times and try again.',
     unknown:'We couldn’t verify the result. Please check your email before booking again; your request may have succeeded.',
-    booked:'You’re on the calendar.',pending:'Your request has been sent.',confirmedNote:'Your calendar invitation is on its way to',pendingNote:'You’ll receive an email when your request is confirmed at',
-    anotherBooking:'Back to calendar',successLabel:'Booking confirmation',location:'Meeting location',zoom:'Zoom',custom:'Custom location',customLabel:'Location or meeting link',customHint:'Enter an address, a meeting link, or another place to meet.',locationRequired:'Please enter your custom location or meeting link.',zoomHint:'A Zoom meeting link will be included in your calendar invitation.',openZoom:'Open Zoom meeting',endNext:'next day',footer:'A little time. A good conversation.',
-    viewPageTitle:'Justin’s availability',bookPageTitle:'Book time with Justin',footerTime:'Times update as calendars change.',selected:'Selected',
+    booked:'Booking confirmed',pending:'Awaiting confirmation',confirmedNote:'Calendar invitation will be sent to',pendingNote:'Confirmation will be emailed to',
+    anotherBooking:'Back to calendar',successLabel:'Booking confirmation',location:'Meeting location',zoom:'Zoom',custom:'Custom location',customLabel:'Location or meeting link',locationRequired:'Please enter your custom location or meeting link.',zoomHint:'A Zoom meeting link will be included in your calendar invitation.',openZoom:'Open Zoom meeting',endNext:'next day',
+    viewPageTitle:'Justin’s availability',bookPageTitle:'Book a meeting with Justin',
   },
-  zh:{brand:'Justin 的空闲时间',bookNav:'预约时间',viewNav:'查看空闲时间',switch:'English',switchLabel:'切换为英文',
-    bookingTitle:'留点时间，\n好好聊聊。',viewTitle:'看看哪天，\n刚好有空。',eyebrow:'与 JUSTIN 交流',viewEyebrow:'JUSTIN 的空闲时间',
-    bookingIntro:'选一个适合你的时间，我们到时见。',viewIntro:'选择日期，查看我的空闲时段。时间会按你选择的时区自动换算。',
-    privateNote:'仅展示空闲时间，日历内容保持私密。',duration:'预约时长',zone:'你所在的时区',calendar:'选择日期',
+  zh:{brand:'Justin',bookNav:'预约时间',viewNav:'查看空闲时间',switch:'English',switchLabel:'切换为英文',
+    bookingTitle:'预约会议',viewTitle:'空闲时间',
+    bookingDescription:'预约与 Justin 的会议，选择时长、日期、时间和会议地点。',viewDescription:'按日期和时区查看 Justin 的空闲时间。',
+    privateNote:'不展示日历中的事件详情。',duration:'预约时长',zone:'时区',calendar:'选择日期',
     prev:'上个月',next:'下个月',today:'今天',choose:'选择开始时间',free:'空闲时段',shown:'以下时间均为',loading:'正在查询空闲时间…',
-    empty:'这一天暂无空闲时段。',emptyBook:'这一天没有适合所选时长的时段。',another:'可以查看其他日期。',failed:'暂时无法读取空闲时间，请重试。',retry:'重试',refresh:'刷新',
+    empty:'当天无空闲时段。',emptyBook:'当天无符合所选时长的时段。',another:'请选择其他日期。',failed:'暂时无法读取空闲时间，请重试。',retry:'重试',refresh:'刷新',
     days:['日','一','二','三','四','五','六'],dayNames:['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
-    ranges:n=>`${n} 个空闲时段`,total:t=>`共 ${t} 空闲`,minuteNote:'空闲区间精确到分钟。查看今天时，仅显示尚未过去的时间。',
+    ranges:n=>`${n} 个空闲时段`,total:t=>`共 ${t} 空闲`,minuteNote:'已过去的时段不显示。',
     chooseHint:'开始时间按所选预约时长排列。',back:'返回选择时间',details:'填写预约信息',detailsIntro:'日历邀请将发送到你填写的邮箱。',
-    name:'姓名',email:'邮箱地址',topic:'想聊些什么？',notes:'其他补充',optional:'选填',
+    name:'姓名',email:'邮箱地址',topic:'会议主题',notes:'备注',optional:'选填',
     confirm:'确认预约',sending:'正在确认预约…',required:'请填写姓名和邮箱。',invalidEmail:'请填写有效的邮箱地址。',
     stale:'这个时段已不可预约，请重新选择。',rejected:'预约未能完成，请刷新时段后重试。',
     unknown:'暂时无法确认预约结果。请先检查邮箱，再决定是否重新预约；刚才的预约可能已成功。',
-    booked:'预约成功，到时见。',pending:'预约请求已发送。',confirmedNote:'日历邀请将发送至',pendingNote:'预约确认后，我们会通过以下邮箱通知你：',
-    anotherBooking:'返回日历',successLabel:'预约确认',location:'会议地点',zoom:'Zoom',custom:'自定义地点',customLabel:'地点或会议链接',customHint:'填写地址、会议链接，或其他见面地点。',locationRequired:'请填写自定义地点或会议链接。',zoomHint:'日历邀请中将包含 Zoom 会议链接。',openZoom:'打开 Zoom 会议',endNext:'次日',footer:'留点时间，好好聊聊。',
-    viewPageTitle:'Justin 的空闲时间',bookPageTitle:'预约与 Justin 的交流',footerTime:'空闲时间随日历变化而更新。',selected:'已选择',
+    booked:'预约成功',pending:'等待确认',confirmedNote:'日历邀请将发送至',pendingNote:'确认结果将发送至',
+    anotherBooking:'返回日历',successLabel:'预约确认',location:'会议地点',zoom:'Zoom',custom:'自定义地点',customLabel:'地点或会议链接',locationRequired:'请填写自定义地点或会议链接。',zoomHint:'日历邀请中将包含 Zoom 会议链接。',openZoom:'打开 Zoom 会议',endNext:'次日',
+    viewPageTitle:'Justin 的空闲时间',bookPageTitle:'预约与 Justin 的会议',
   }
 };
 const zones = [
@@ -106,7 +106,7 @@ function locationSummary() {
  return state.location==='zoom' ? t().zoom : state.fields.customLocation.trim() || t().custom;
 }
 function locationHTML() {
- return `<fieldset class="location-field"><legend>${t().location}</legend><div class="location-options"><label class="location-option ${state.location==='zoom'?'chosen':''}"><input type="radio" name="meetingLocation" value="zoom" ${state.location==='zoom'?'checked':''} ${state.submitting?'disabled':''}>${t().zoom}</label><label class="location-option ${state.location==='custom'?'chosen':''}"><input type="radio" name="meetingLocation" value="custom" ${state.location==='custom'?'checked':''} ${state.submitting?'disabled':''}>${t().custom}</label></div>${state.location==='custom'?`${fieldHTML('customLocation',t().customLabel,true)}<p class="location-hint">${t().customHint}</p>`:`<p class="location-hint">${t().zoomHint}</p>`}</fieldset>`;
+ return `<fieldset class="location-field"><legend>${t().location}</legend><div class="location-options"><label class="location-option ${state.location==='zoom'?'chosen':''}"><input type="radio" name="meetingLocation" value="zoom" ${state.location==='zoom'?'checked':''} ${state.submitting?'disabled':''}>${t().zoom}</label><label class="location-option ${state.location==='custom'?'chosen':''}"><input type="radio" name="meetingLocation" value="custom" ${state.location==='custom'?'checked':''} ${state.submitting?'disabled':''}>${t().custom}</label></div>${state.location==='custom'?fieldHTML('customLocation',t().customLabel,true):`<p class="location-hint">${t().zoomHint}</p>`}</fieldset>`;
 }
 function zoomLinkHTML() {
  if(state.location!=='zoom'||state.result?.status!=='accepted')return '';
@@ -124,9 +124,9 @@ function successHTML() {
 }
 function render() {
  const c=t();document.documentElement.lang=state.lang==='zh'?'zh-CN':'en';document.title=readOnly?c.viewPageTitle:c.bookPageTitle;
- document.querySelector('meta[name="description"]').content=readOnly?c.viewIntro:c.bookingIntro;
+ document.querySelector('meta[name="description"]').content=readOnly?c.viewDescription:c.bookingDescription;
  const options=[...zones]; if(!zones.some(z=>z[0]===state.zone))options.push([state.zone]);
- app.innerHTML=`<a class="skip-link" href="#main">${state.lang==='zh'?'跳转到主要内容':'Skip to main content'}</a><div class="page-shell"><header><a class="wordmark" href="./?lang=${state.lang}"><span class="brand-mark" aria-hidden="true">j.</span>${c.brand}</a><div class="header-actions"><nav aria-label="${state.lang==='zh'?'页面导航':'Main navigation'}"><a class="${readOnly?'':'active'}" ${readOnly?'':'aria-current="page"'} href="./?lang=${state.lang}">${c.bookNav}</a><a class="${readOnly?'active':''}" ${readOnly?'aria-current="page"':''} href="./availability.html?lang=${state.lang}">${c.viewNav}</a></nav><button class="language-button" id="language" aria-label="${c.switchLabel}" ${state.submitting?'disabled':''}>${c.switch}</button></div></header><main id="main" class="main-card ${readOnly?'view-mode':''}"><aside class="intro"><div class="intro-top"><div class="avatar" aria-hidden="true">JL<span></span></div><p class="eyebrow">${readOnly?c.viewEyebrow:c.eyebrow}</p><h1>${(readOnly?c.viewTitle:c.bookingTitle).replace('\n','<br>')}</h1><p class="intro-copy">${readOnly?c.viewIntro:c.bookingIntro}</p></div><div class="intro-bottom"><div class="orbital" aria-hidden="true"><span></span><i></i></div><p>${lock}${c.privateNote}</p></div></aside><div class="workspace">${state.result?successHTML():state.slot?detailsHTML():`<div class="preferences">${readOnly?'':`<div class="duration-control"><p class="section-label">${c.duration}</p><div class="duration-buttons" role="group" aria-label="${c.duration}">${DURATIONS.map(d=>`<button data-duration="${d}" class="${d===state.duration?'selected':''}" aria-pressed="${d===state.duration}">${dur(d)}</button>`).join('')}</div></div>`}<label class="timezone-control"><span class="section-label">${c.zone}</span><select id="timezone">${options.map(z=>`<option value="${z[0]}" ${z[0]===state.zone?'selected':''}>${esc(zoneLabel(z[0]))}</option>`).join('')}</select></label></div><div class="schedule-grid">${calendarHTML()}${slotsHTML()}</div>`}</div></main><footer><span>${c.footer}</span><span>${c.footerTime}</span></footer></div>`;
+ app.innerHTML=`<a class="skip-link" href="#main">${state.lang==='zh'?'跳转到主要内容':'Skip to main content'}</a><div class="page-shell"><header><a class="wordmark" href="./?lang=${state.lang}"><span class="brand-mark" aria-hidden="true">j.</span>${c.brand}</a><div class="header-actions"><nav aria-label="${state.lang==='zh'?'页面导航':'Main navigation'}"><a class="${readOnly?'':'active'}" ${readOnly?'':'aria-current="page"'} href="./?lang=${state.lang}">${c.bookNav}</a><a class="${readOnly?'active':''}" ${readOnly?'aria-current="page"':''} href="./availability.html?lang=${state.lang}">${c.viewNav}</a></nav><button class="language-button" id="language" aria-label="${c.switchLabel}" ${state.submitting?'disabled':''}>${c.switch}</button></div></header><main id="main" class="main-card ${readOnly?'view-mode':''}"><aside class="intro"><div class="intro-top"><div class="avatar" aria-hidden="true">JL<span></span></div><h1>${(readOnly?c.viewTitle:c.bookingTitle).replace('\n','<br>')}</h1></div><div class="intro-bottom"><div class="orbital" aria-hidden="true"><span></span><i></i></div><p>${lock}${c.privateNote}</p></div></aside><div class="workspace">${state.result?successHTML():state.slot?detailsHTML():`<div class="preferences">${readOnly?'':`<div class="duration-control"><p class="section-label">${c.duration}</p><div class="duration-buttons" role="group" aria-label="${c.duration}">${DURATIONS.map(d=>`<button data-duration="${d}" class="${d===state.duration?'selected':''}" aria-pressed="${d===state.duration}">${dur(d)}</button>`).join('')}</div></div>`}<label class="timezone-control"><span class="section-label">${c.zone}</span><select id="timezone">${options.map(z=>`<option value="${z[0]}" ${z[0]===state.zone?'selected':''}>${esc(zoneLabel(z[0]))}</option>`).join('')}</select></label></div><div class="schedule-grid">${calendarHTML()}${slotsHTML()}</div>`}</div></main></div>`;
  bind();
 }
 function bind() {

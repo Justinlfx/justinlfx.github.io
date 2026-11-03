@@ -1,5 +1,5 @@
-import config from './config.js';
-import {DURATIONS, dateKey, addDays, dayBounds, timeLabel, dayLabel, durationLabel, mergeRanges, gmtOffsetLabel, getSlots, createBooking} from './booking-utils.js?v=f6d835aff372';
+import config from './config.js?v=56af3b5a1e7e';
+import {DURATIONS, dateKey, addDays, dayBounds, timeLabel, dayLabel, durationLabel, mergeRanges, gmtOffsetLabel, getSlots, createBooking} from './booking-utils.js?v=69ebd9c00e70';
 
 const copy = {
   en:{brand:'Justin',bookNav:'Book a time with Justin',viewNav:"Find Justin's Availability",switch:'中文',switchLabel:'Switch to Chinese',
@@ -149,7 +149,7 @@ async function loadSlots(force=false) {
  state.loading=true;state.error='';state.slots=[];render();
  const key=`${state.day}|${state.zone}|${readOnly?1:state.duration}`, entry=cache.get(key);
  try {
-  const slots=!force&&entry&&Date.now()-entry.at<30000?entry.slots:await getSlots({eventTypeId:config.eventTypeId,day:state.day,zone:state.zone,duration:readOnly?1:state.duration,signal:AbortSignal.any([controller.signal,AbortSignal.timeout(20000)])});
+  const slots=!force&&entry&&Date.now()-entry.at<30000?entry.slots:await getSlots({eventTypeId:readOnly?config.availabilityEventTypeId:config.eventTypeId,day:state.day,zone:state.zone,duration:readOnly?1:state.duration,signal:AbortSignal.any([controller.signal,AbortSignal.timeout(20000)])});
   if(id!==requestId)return;
   state.slots=slots.filter(s=>s.start>=Date.now());cache.set(key,{at:Date.now(),slots});
  }catch(error){if(id!==requestId)return;state.error='failed';}

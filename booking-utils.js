@@ -53,28 +53,14 @@ export function mergeRanges(slots, bounds) {
   }
   return result;
 }
-export function halfHourlySlots(freeMinutes, bounds, duration) {
-  if (!DURATIONS.includes(duration)) throw new Error('Invalid booking duration');
-  const slots = [], step = 30 * 60000, length = duration * 60000;
-  // Anchor starts to Justin's half hours; convert their display to the visitor's zone.
-  for (const range of mergeRanges(freeMinutes, {start:bounds.start, end:bounds.end + length})) {
-    for (let start = Math.ceil(range.start / step) * step; start < bounds.end && start + length <= range.end; start += step) {
-      slots.push({start, end:start + length});
-    }
-  }
-  return slots;
-}
 export async function getSlots({ eventTypeId, day, zone, duration, signal }) {
   const bounds = dayBounds(day, zone), url = new URL('https://api.cal.com/v2/slots');
-  // Keep minute-resolution free time for both views, including meetings crossing local midnight.
-  const queryBounds = {start:bounds.start, end:bounds.end + (duration === 1 ? 0 : duration * 60000)};
-  for (const [k,v] of Object.entries({eventTypeId, start:new Date(queryBounds.start).toISOString(), end:new Date(queryBounds.end).toISOString(), timeZone:zone, duration:1, format:'range'})) url.searchParams.set(k,v);
+  for (const [k,v] of Object.entries({eventTypeId, start:new Date(bounds.start).toISOString(), end:new Date(bounds.end).toISOString(), timeZone:zone, duration, format:'range'})) url.searchParams.set(k,v);
   const response = await fetch(url, {headers:{'cal-api-version':'2024-09-04'}, signal, credentials:'omit'});
   if (!response.ok) throw new Error('Availability unavailable');
   const result = await response.json();
   if (result.status !== 'success') throw new Error('Availability unavailable');
-  const freeMinutes = normalizeSlots(result.data, queryBounds, 1);
-  return duration === 1 ? freeMinutes : halfHourlySlots(freeMinutes, bounds, duration);
+  return normalizeSlots(result.data, bounds, duration);
 }
 export function bookingLocation(choice, customLocation) {
   if (choice === 'zoom') return {type:'integration', integration:'zoom'};

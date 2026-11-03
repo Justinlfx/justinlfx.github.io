@@ -4,7 +4,7 @@ import { dirname, resolve, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = dirname(fileURLToPath(import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg' };
-const publicFiles = new Set(['/index.html','/styles.css','/app.js','/config.js','/booking-utils.js','/favicon.svg','/justin-availability/index.html','/justin-availability/availability.html','/personal.css','/personal.js','/personal-favicon.svg','/justin-lu.jpg']);
+const publicFiles = new Set(['/index.html','/aligned-profit.html','/eurasian-capital.html','/carvana-research.html','/company-research.html','/film-market-research.html','/styles.css','/app.js','/config.js','/booking-utils.js','/favicon.svg','/justin-availability/index.html','/justin-availability/availability.html','/personal.css','/personal.js','/personal-favicon.svg','/justin-lu.jpg']);
 const port = Number(process.env.PORT || 4173);
 http.createServer(async (req, res) => {
   let pathname;

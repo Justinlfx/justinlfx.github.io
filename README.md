@@ -1,6 +1,23 @@
-# Justin availability
+# Justin Lu
 
-A responsive bilingual website hosted free on GitHub Pages.
+An English personal website with bilingual booking pages, hosted on GitHub Pages.
+
+## Personal website
+
+The root page introduces Justin's finance experience, selected research, filmmaking, and campus leadership. The visual system uses paper and charcoal neutrals, Georgia headlines, a real portrait, and a source-based Carvana chart. LinkedIn uses an inline SVG. The page has no emoji, decorative icons, or dash punctuation.
+
+- Homepage: https://justinlfx.github.io/
+- Source branch: `personal-website`
+- Homepage files: `index.html`, `personal.css`, `personal.js`, `personal-favicon.svg`, and `justin-lu.jpg`
+- The existing booking application remains at `/justin-availability/`.
+
+The homepage has no third-party font, analytics, or JavaScript dependencies. It uses native HTML disclosure for research notes, an accessible mobile menu, a keyboard skip link, visible focus states, and reduced-motion support. The chart is a historical research excerpt, with its period and metric definition shown on the page.
+
+Design review follows [unslop by Damir Sokolovsky](https://github.com/heydamir/unslop), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Original photography and personal content belong to Justin Lu.
+
+Homepage verification covered desktop and mobile rendering, widths from 320 to 1440 pixels, menu open/close and Escape, navigation targets, research disclosure, asset responses, and the absence of emoji and dash punctuation. Existing booking checks passed unchanged.
+
+## Booking website
 
 The November 2026 redesign uses a compact personal header and a full-width appointment sheet, retaining the sage palette and DM Sans / Manrope typography. Calendar selections and booking actions carry the green accent. Captions have stronger contrast, controls have consistent spacing, and the mobile time list uses the page's normal scrolling. Both booking and view-only availability share the same presentation system.
 
@@ -8,7 +25,7 @@ The previous published design is preserved on [`checkpoint/pre-unslop-2026-11-03
 
 - Booking: https://justinlfx.github.io/justin-availability/
 - View-only availability: https://justinlfx.github.io/justin-availability/availability.html
-- The old root URL redirects to the personalized path.
+- The homepage links to the booking page through “Book a conversation.”
 
 English and Chinese have independent interface translations. Visible copy is limited to scheduling controls, booking details, status messages, and calendar privacy information; promotional headings and footer slogans are omitted. The language switch reads 中文 in English and English in Chinese. All appointment times use a 12-hour clock, with AM/PM in English and 上午/下午 in Chinese. The view-only page shows continuous free intervals for the selected day in the visitor’s selected time zone. It contains no booking form or clickable appointment slots.
 
@@ -23,7 +40,7 @@ npm run dev
 npm run check
 ```
 
-Visit http://127.0.0.1:4173/justin-availability/.
+Visit http://127.0.0.1:4173/ for the personal website or http://127.0.0.1:4173/justin-availability/ for booking. Set `PORT` to use another local port.
 
 ## Architecture
 
@@ -64,4 +81,4 @@ Browser checks cover both languages, target-language switch labels, half-hour st
 
 ## Publish
 
-Keep GitHub Pages configured for `main` and repository root. Upload the root public files and the `justin-availability` directory. Keep `.nojekyll`. `index.html` at the repository root redirects to the personalized route. No paid domain or server is required.
+GitHub Pages uses `personal-website` and repository root. Keep all root public files, the `justin-availability` directory, and `.nojekyll`. `index.html` is the personal homepage; booking has its own route. No paid domain or server is required. The `main` branch retains the earlier booking-only version.

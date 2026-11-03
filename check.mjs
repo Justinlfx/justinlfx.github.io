@@ -23,3 +23,22 @@ for(const path of ['app.js','booking-utils.js','config.js','justin-availability/
  assert.ok(!/cal_live_|cal_test_|BEGIN PRIVATE KEY|DIDA_FEED_URL|Bearer\s+[a-z0-9]/i.test(source),path+' contains no credentials');
 }
 console.log('Passed: duration options, 12-hour localization, DST day boundaries, timezone rollover, interval merging, duplicate/boundary filtering, response validation, public configuration.');
+
+const {halfHourlySlots, getSlots} = await import('./booking-utils.js');
+const minute=60000, start=Date.parse('2026-11-03T22:00:00Z');
+const free=Array.from({length:240},(_,i)=>({start:start+i*minute,end:start+(i+1)*minute}));
+const window={start,end:start+240*minute};
+for(const duration of DURATIONS){
+ const slots=halfHourlySlots(free,window,duration);
+ assert.equal(slots[0].start,start);
+ assert.equal(slots[1].start,start+30*minute);
+ assert.ok(slots.every(s=>s.end-s.start===duration*minute && s.end<=window.end));
+}
+const gap=free.filter((_,i)=>i!==75);
+assert.ok(halfHourlySlots(gap,window,60).every(s=>s.end<=start+75*minute || s.start>=start+76*minute));
+assert.equal(halfHourlySlots(free.slice(0,44),window,45).length,0);
+assert.equal(halfHourlySlots(free.slice(0,45),window,45).length,1);
+assert.ok(halfHourlySlots(free,{start,end:start+60*minute},120).some(s=>s.start===start+30*minute&&s.end>start+60*minute));
+assert.equal(halfHourlySlots(free.slice(1),window,60)[0].start,start+30*minute);
+assert.equal(halfHourlySlots([],window,60).length,0);
+console.log('Passed: half-hour starts, exact durations, busy gaps, short windows, past-start rounding and cross-midnight meetings.');

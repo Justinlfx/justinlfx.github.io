@@ -25,10 +25,10 @@ Visit http://127.0.0.1:4173/justin-availability/.
 
 GitHub Pages serves HTML, CSS, and JavaScript. The browser uses Cal.com’s public v2 slots and booking APIs. No API key, calendar token, subscription URL, personal calendar contents, or server is bundled with the site.
 
-- Availability: `GET /v2/slots`, API version `2024-09-04`, with event type `7703035`, selected duration, explicit UTC day boundaries, and the viewer’s time zone.
+- Availability: `GET /v2/slots`, API version `2024-09-04`, with event type `7703035`, one-minute duration, explicit UTC day boundaries, and the viewer’s time zone.
 - View-only intervals: retrieve one-minute free slots and merge adjacent slots. This resolves free time to the minute rather than approximating it from 30-minute booking slots.
 - Booking: `POST /v2/bookings`, API version `2026-02-25`. The site requires name and email. The meeting topic and notes are optional; company/school is not requested. Visitors select Zoom or supply a custom location/meeting link, which is sent in the booking API location object. It rechecks availability before submitting. Cal.com validates conflicts and creates the invitation.
-- Booking options: 30, 45, 60, and 120 minutes. Cal.com’s slot interval is **Use event length (default)**, so starts follow the chosen duration.
+- Booking options: 30, 45, 60, and 120 minutes. Cal.com’s slot interval is **Use event length (default)**, to preserve minute-resolution free time. The website offers starts every 30 minutes for every duration, only when the entire meeting fits within a continuous free interval. The same check runs again before submission.
 - Confirmation is displayed only after an accepted API response. Pending responses display a request acknowledgement. Network failures during submission never cause automatic retries, because the request may already have succeeded.
 - Availability errors remain visible errors, never “no availability.” Superseded fetches are aborted and ignored. A 30-second in-memory cache avoids duplicate reads; Refresh bypasses it. Name, email, and form contents are never saved to local storage. Only language and time zone preferences are stored locally.
 - Local calendar days use actual zone boundaries, including 23-hour and 25-hour daylight-saving days. Displayed intervals are clipped to the selected local day. Today shows only future free time.
@@ -56,7 +56,7 @@ Calendar-provider refresh and Dida’s sync interval can introduce delay. The UI
 
 Automated checks cover allowed durations, localized 12-hour times, DST boundaries, cross-zone date rollover, range merging/clipping, duplicate slots, malformed API responses, and absence of credentials from public source.
 
-Browser checks cover both languages, target-language switch labels, duration-dependent starts, time-zone conversion, view-only behavior, and mobile overflow. A temporary self-booking through the custom Chinese form succeeded; its invitation contained the submitted topic and notes and identified U.S Work as organizer. The temporary booking was cancelled after verification. Additional self-bookings with empty meeting topics verified both Zoom-generated links and attendee-defined locations in the received ICS invitations; both test bookings were cancelled. The backend topic field is optional and the organization field is hidden.
+Browser checks cover both languages, target-language switch labels, half-hour starts for every duration, time-zone conversion, view-only behavior, and mobile overflow. A temporary self-booking through the custom Chinese form succeeded; its invitation contained the submitted topic and notes and identified U.S Work as organizer. The temporary booking was cancelled after verification. Additional self-bookings with empty meeting topics verified both Zoom-generated links and attendee-defined locations in the received ICS invitations; both test bookings were cancelled. The backend topic field is optional and the organization field is hidden.
 
 ## Publish
 

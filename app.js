@@ -1,5 +1,5 @@
 import config from './config.js';
-import {DURATIONS, dateKey, addDays, dayBounds, timeLabel, dayLabel, durationLabel, mergeRanges, gmtOffsetLabel, getSlots, createBooking} from './booking-utils.js';
+import {DURATIONS, dateKey, addDays, dayBounds, timeLabel, dayLabel, durationLabel, mergeRanges, gmtOffsetLabel, getSlots, createBooking} from './booking-utils.js?v=f6d835aff372';
 
 const copy = {
   en:{brand:'Justin',bookNav:'Book a time with Justin',viewNav:"Find Justin's Availability",switch:'中文',switchLabel:'Switch to Chinese',
@@ -10,7 +10,7 @@ const copy = {
     empty:'No available times.',emptyBook:'No available times for this duration.',another:'Select another date.',failed:'Availability could not be loaded. Please try again.',retry:'Try again',refresh:'Refresh',
     days:['S','M','T','W','T','F','S'],dayNames:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     ranges:n=>`${n} available ${n===1?'period':'periods'}`,total:t=>`${t} available`,minuteNote:'Past times are excluded.',
-    chooseHint:'Start times follow your selected meeting length.',back:'Back to times',details:'Booking details',detailsIntro:'A calendar invitation will be sent to your email.',
+    chooseHint:'Start times are offered every 30 minutes.',back:'Back to times',details:'Booking details',detailsIntro:'A calendar invitation will be sent to your email.',
     name:'Full name',email:'Email address',topic:'Meeting topic',notes:'Notes',optional:'Optional',
     confirm:'Confirm booking',sending:'Confirming booking…',required:'Please complete your name and email.',invalidEmail:'Please enter a valid email address.',
     stale:'This time is no longer available. Please choose another.',rejected:'The booking could not be completed. Refresh the times and try again.',
@@ -27,7 +27,7 @@ const copy = {
     empty:'当天无空闲时段。',emptyBook:'当天无符合所选时长的时段。',another:'请选择其他日期。',failed:'暂时无法读取空闲时间，请重试。',retry:'重试',refresh:'刷新',
     days:['日','一','二','三','四','五','六'],dayNames:['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
     ranges:n=>`${n} 个空闲时段`,total:t=>`共 ${t} 空闲`,minuteNote:'已过去的时段不显示。',
-    chooseHint:'开始时间按所选预约时长排列。',back:'返回选择时间',details:'填写预约信息',detailsIntro:'日历邀请将发送到你填写的邮箱。',
+    chooseHint:'每半小时可选择一个开始时间。',back:'返回选择时间',details:'填写预约信息',detailsIntro:'日历邀请将发送到你填写的邮箱。',
     name:'姓名',email:'邮箱地址',topic:'会议主题',notes:'备注',optional:'选填',
     confirm:'确认预约',sending:'正在确认预约…',required:'请填写姓名和邮箱。',invalidEmail:'请填写有效的邮箱地址。',
     stale:'这个时段已不可预约，请重新选择。',rejected:'预约未能完成，请刷新时段后重试。',

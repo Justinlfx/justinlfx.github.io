@@ -2,6 +2,10 @@
 
 A responsive bilingual website hosted free on GitHub Pages.
 
+The November 2026 redesign uses a compact personal header and a full-width appointment sheet, retaining the sage palette and DM Sans / Manrope typography. Calendar selections and booking actions carry the green accent. Captions have stronger contrast, controls have consistent spacing, and the mobile time list uses the page's normal scrolling. Both booking and view-only availability share the same presentation system.
+
+The previous published design is preserved on [`checkpoint/pre-unslop-2026-11-03`](https://github.com/Justinlfx/justinlfx.github.io/tree/checkpoint/pre-unslop-2026-11-03), at commit `481bb3f656fcb27e659a97c4295976543e565130`. The redesign changes presentation only; scheduling rules and calendar integrations remain unchanged. Design review used [Unslop by Damir Sokolovsky](https://github.com/heydamir/unslop), CC BY 4.0.
+
 - Booking: https://justinlfx.github.io/justin-availability/
 - View-only availability: https://justinlfx.github.io/justin-availability/availability.html
 - The old root URL redirects to the personalized path.

@@ -4,7 +4,7 @@ An English personal website with bilingual booking pages, hosted on GitHub Pages
 
 ## Personal website
 
-The root page introduces Justin's finance experience, selected research, filmmaking, and campus leadership. The visual system uses paper and charcoal neutrals, Georgia headlines, a real portrait, and a source-based Carvana chart. LinkedIn uses an inline SVG. The page has no emoji, decorative icons, or dash punctuation.
+The root page introduces Justin's finance experience, selected research, filmmaking, and campus leadership. The visual system uses paper and charcoal neutrals, Georgia headlines, an uncropped color professional portrait, and a source-based Carvana chart. LinkedIn uses an inline SVG. The page has no emoji, decorative icons, or dash punctuation.
 
 - Homepage: https://justinlfx.github.io/
 - Source branch: `personal-website`
@@ -13,7 +13,7 @@ The root page introduces Justin's finance experience, selected research, filmmak
 
 The homepage has no third-party font, analytics, or JavaScript dependencies. It uses native HTML disclosure for research notes, an accessible mobile menu, a keyboard skip link, visible focus states, and reduced-motion support. The chart is a historical research excerpt, with its period and metric definition shown on the page.
 
-Design review follows [unslop by Damir Sokolovsky](https://github.com/heydamir/unslop), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Original photography and personal content belong to Justin Lu.
+Design review follows [unslop by Damir Sokolovsky](https://github.com/heydamir/unslop), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The professional portrait and biographical content were supplied by Justin Lu.
 
 Homepage verification covered desktop and mobile rendering, widths from 320 to 1440 pixels, menu open/close and Escape, navigation targets, research disclosure, asset responses, and the absence of emoji and dash punctuation. Existing booking checks passed unchanged.
 
